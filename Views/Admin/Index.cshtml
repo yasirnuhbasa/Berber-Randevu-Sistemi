@@ -1,0 +1,154 @@
+<!-- Yönetici paneli ana sayfası. Randevuları listeler ve yönetim araçlarına erişim sağlar. -->
+<!-- Bu sayfa yönetici paneli ana ekranıdır (Dashboard). Randevuları listeler ve filtreleme seçenekleri sunar. -->
+@model IEnumerable<BerberRandevuSistemi.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Yönetim Paneli - Randevular";
+    Layout = "_AdminLayout";
+    
+    var barbers = ViewBag.Barbers as List<BerberRandevuSistemi.Models.Barber>;
+    var currentDate = ViewBag.CurrentDate as string;
+    var currentBarber = ViewBag.CurrentBarber as int?;
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="text-warning fw-bold"><i class="bi bi-calendar-check me-2"></i>Randevular</h2>
+            <p class="text-white-50 mb-0">Tüm randevuları buradan yönetebilirsiniz.</p>
+        </div>
+    </div>
+
+    <!-- Single Card Container -->
+    <div class="card shadow bg-dark text-white border-secondary">
+        
+        <!-- Card Header: Filter Toolbar -->
+        <div class="card-header border-secondary p-3 bg-gradient">
+            <form method="get" asp-action="Index" class="row g-2 align-items-center">
+                <!-- Date Input -->
+                <div class="col-md-3">
+                    <input type="date" name="date" class="form-control bg-dark text-white border-secondary" 
+                           value="@ViewBag.SelectedDate" onchange="this.form.submit()" />
+                </div>
+                
+                <!-- Barber Select -->
+                <div class="col-md-3">
+                    <select name="barberId" class="form-select bg-dark text-white border-secondary" onchange="this.form.submit()">
+                        <option value="">-- Tüm Berberler --</option>
+                        @if (ViewBag.Barbers != null)
+                        {
+                            foreach (var barber in (IEnumerable<BerberRandevuSistemi.Models.Barber>)ViewBag.Barbers)
+                            {
+                                if (ViewBag.SelectedBarberId == barber.Id)
+                                {
+                                    <option value="@barber.Id" selected>@barber.FullName</option>
+                                }
+                                else
+                                {
+                                    <option value="@barber.Id">@barber.FullName</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                
+                <!-- Filter Button -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="bi bi-funnel"></i> Filtrele
+                    </button>
+                </div>
+                
+                <!-- Clear Button -->
+                <div class="col-md-1">
+                    <a href="/Admin/Index" class="btn btn-outline-secondary w-100" title="Filtreleri Temizle">
+                        <i class="bi bi-x-circle"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Card Body: Results Table -->
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead>
+                            <tr class="text-white-50">
+                                <th class="ps-3">Tarih</th>
+                                <th>Saat</th>
+                                <th>Berber</th>
+                                <th>Müşteri</th>
+                                <th>Hizmet</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-3">
+                                        <i class="bi bi-calendar-event me-2 text-white-50"></i>@item.AppointmentDate.ToString("dd.MM.yyyy")
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark px-3 rounded-pill fw-bold">
+                                            @item.AppointmentDate.ToString("HH:mm")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-secondary me-2 d-flex align-items-center justify-content-center rounded-circle" style="width:30px;height:30px;">
+                                                <i class="bi bi-person-badge text-white" style="font-size:0.8rem;"></i>
+                                            </div>
+                                            <span>@item.Barber?.FullName</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="fw-bold">@item.CustomerName</div>
+                                            <div class="small text-white-50">@item.CustomerPhone</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-dark border border-secondary text-light">
+                                            @item.Service?.ServiceName
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.AppointmentDate < DateTime.Now)
+                                        {
+                                            <span class="badge bg-secondary">Tamamlandı</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Aktif</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-1 text-secondary mb-3 opacity-50"></i>
+                    <h5 class="text-white">Randevu bulunamadı</h5>
+                    <p class="text-white-50">Seçilen kriterlere uygun kayıt yok.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-page-header {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .bg-dark {
+        background-color: #2c2c2c !important; /* Ensure visibility on light bg if admin layout is mixed */
+    }
+</style>

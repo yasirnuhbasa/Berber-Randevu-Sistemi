@@ -1,0 +1,48 @@
+<!-- Bu sayfa seçilen hizmetin detaylarını gösterir. Sadece yöneticiler görebilir. -->
+@model BerberRandevuSistemi.Models.Service
+
+@{
+    ViewData["Title"] = "Hizmet Detayları";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page-header mb-4">
+    <h2>
+        <span class="text-gold">
+            <i class="bi bi-list-check me-2"></i>Hizmet Detayları
+        </span>
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <dl class="row">
+                    <dt class="col-sm-4 text-gold">@Html.DisplayNameFor(model => model.ServiceName)</dt>
+                    <dd class="col-sm-8 text-white">@Html.DisplayFor(model => model.ServiceName)</dd>
+
+                    <dt class="col-sm-4 text-gold">@Html.DisplayNameFor(model => model.Price)</dt>
+                    <dd class="col-sm-8 text-white">@Model.Price.ToString("N2") ₺</dd>
+
+                    <dt class="col-sm-4 text-gold">@Html.DisplayNameFor(model => model.DurationMinutes)</dt>
+                    <dd class="col-sm-8 text-white">@Html.DisplayFor(model => model.DurationMinutes) dakika</dd>
+
+                    <dt class="col-sm-4 text-gold">@Html.DisplayNameFor(model => model.Description)</dt>
+                    <dd class="col-sm-8 text-white">@Html.DisplayFor(model => model.Description)</dd>
+                </dl>
+
+                <div class="mt-4">
+            <a asp-action="EditService" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="bi bi-pencil me-2"></i>Düzenle
+            </a>
+            <a asp-action="Services" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Geri Dön
+            </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>

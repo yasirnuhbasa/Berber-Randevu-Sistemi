@@ -1,0 +1,48 @@
+<!-- Bu sayfa hizmet silme işlemi için onay ekranıdır. Sadece yöneticiler görebilir. -->
+@model BerberRandevuSistemi.Models.Service
+
+@{
+    ViewData["Title"] = "Hizmet Sil";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page-header mb-4">
+    <h2>
+        <span class="text-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>Hizmet Sil
+        </span>
+    </h2>
+    <p class="text-danger mb-0">Bu hizmeti silmek istediğinize emin misiniz?</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ServiceName)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.ServiceName)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Price)</dt>
+            <dd class="col-sm-8">@Model.Price.ToString("N2") ₺</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DurationMinutes)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.DurationMinutes) dakika</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Description)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
+                </dl>
+
+                <form asp-action="DeleteService">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i>Sil
+            </button>
+            <a asp-action="Services" class="btn btn-secondary">
+                <i class="bi bi-x-circle me-2"></i>İptal
+            </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>

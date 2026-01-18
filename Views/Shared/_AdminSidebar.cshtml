@@ -1,0 +1,37 @@
+<div class="admin-sidebar">
+    <!-- Bu dosya yönetici paneli yan menüsünü (sidebar) içerir. -->
+    <div class="sidebar pe-4 pb-3">
+        <h5 class="mb-0">
+            <i class="bi bi-shield-lock me-2"></i>Yönetim Paneli
+        </h5>
+    </div>
+    <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-action="Index" asp-controller="Admin">
+                    <i class="bi bi-calendar-check me-2"></i>Randevular
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString()?.StartsWith("Barber") == true ? "active" : "")" asp-action="Barbers" asp-controller="Admin">
+                    <i class="bi bi-person-badge me-2"></i>Berberler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString()?.StartsWith("Service") == true || ViewContext.RouteData.Values["Action"]?.ToString() == "Services" ? "active" : "")" asp-action="Services" asp-controller="Admin">
+                    <i class="bi bi-list-check me-2"></i>Hizmetler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Users" ? "active" : "")" asp-action="Users" asp-controller="Admin">
+                    <i class="bi bi-people me-2"></i>Müşteriler
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <a asp-action="Index" asp-controller="Home" class="btn btn-outline-light btn-sm w-100">
+            <i class="bi bi-arrow-left me-2"></i>Ana Sayfaya Dön
+        </a>
+    </div>
+</div>

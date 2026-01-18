@@ -1,0 +1,59 @@
+<!-- Bu sayfa seçilen berberin detaylarını gösterir. Sadece yöneticiler görebilir. -->
+@model BerberRandevuSistemi.Models.Barber
+
+@{
+    ViewData["Title"] = "Berber Detayları";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page-header mb-4">
+    <h2>
+        <span class="text-gold">
+            <i class="bi bi-person-badge me-2"></i>Berber Detayları
+        </span>
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FullName)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+
+
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.IsAvailable)</dt>
+            <dd class="col-sm-8">
+                @if (Model.IsAvailable)
+                {
+                    <span class="badge bg-success">Müsait</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Müsait Değil</span>
+                }
+            </dd>
+
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ImageUrl)</dt>
+                <dd class="col-sm-8">
+                    <img src="@Model.ImageUrl" alt="@Model.FullName" class="img-fluid" style="max-height: 300px;">
+                </dd>
+            }
+                </dl>
+
+                <div class="mt-4">
+            <a asp-action="EditBarber" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="bi bi-pencil me-2"></i>Düzenle
+            </a>
+            <a asp-action="Barbers" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Geri Dön
+            </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

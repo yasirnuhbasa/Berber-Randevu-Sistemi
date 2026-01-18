@@ -1,0 +1,106 @@
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<style>
+    /* 1. Autofill (Otomatik Doldurma) Arka Planını Zorla Kapat */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #252525 inset !important;
+        -webkit-text-fill-color: white !important;
+        transition: background-color 9999s ease-in-out 0s !important;
+        caret-color: white !important;
+    }
+
+    /* 2. Floating Label Input Focus Durumu */
+    .form-floating > .form-control,
+    .form-floating > .form-control:focus {
+        background-color: #252525 !important;
+        color: #fff !important;
+        border-color: #c59d5f !important; /* Altın rengi sınır */
+        box-shadow: none !important; /* Varsayılan mavi parlamayı kapat */
+    }
+
+    /* 3. Focus olunca çıkan hafif altın gölge */
+    .form-floating > .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(197, 157, 95, 0.25) !important;
+    }
+
+    /* 4. Etiket (Label) Ayarları - Temel Durum */
+    .form-floating > label {
+        color: #c59d5f !important;       /* Yazı Rengi: Altın Sarısı */
+        font-weight: 600 !important;     /* Daha kalın ve okunaklı */
+        background-color: transparent !important; /* İlk başta şeffaf olsun */
+    }
+    
+    /* 5. Input doluysa veya focus ise etiket rengi */
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #c59d5f !important; /* Altın rengi */
+        opacity: 1;
+    }
+</style>
+
+<div class="row justify-content-center mt-5 mb-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0" style="background-color: #252525;">
+            <div class="card-header bg-transparent border-bottom border-secondary text-center py-4">
+                <h3 class="mb-0 fw-bold" style="color: #c59d5f;">
+                    <i class="bi bi-person-circle me-2"></i>Giriş Yap
+                </h3>
+            </div>
+            <div class="card-body p-5">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success mb-4" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                    </div>
+                }
+                
+                @if (ViewData["Error"] != null)
+                {
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@ViewData["Error"]
+                    </div>
+                }
+
+                <form asp-action="Login" method="post" autocomplete="off">
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                    
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="E-posta" required autofocus autocomplete="off">
+                        <label for="email">E-posta</label>
+                    </div>
+                    
+                    <div class="form-floating mb-4">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Şifre" required autocomplete="new-password">
+                        <label for="password">Şifre</label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-lg fw-bold" style="background-color: #c59d5f; color: #1a1a1a; border: none;">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-transparent border-top border-secondary">
+                <div class="text-center mt-4">
+                    <span class="text-white">Hesabınız yok mu?</span>
+                    <a asp-action="Register" class="fw-bold" style="color: #c59d5f; text-decoration: none; margin-left: 5px;">
+                        Kayıt Ol
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

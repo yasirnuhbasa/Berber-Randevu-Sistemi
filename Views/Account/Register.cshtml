@@ -1,0 +1,99 @@
+@model BerberRandevuSistemi.Models.User
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<style>
+    /* 1. Autofill (Otomatik Doldurma) Arka Planını Zorla Kapat */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #252525 inset !important;
+        -webkit-text-fill-color: white !important;
+        transition: background-color 9999s ease-in-out 0s !important;
+        caret-color: white !important;
+    }
+
+    /* 2. Floating Label Input Focus Durumu */
+    .form-floating > .form-control,
+    .form-floating > .form-control:focus {
+        background-color: #252525 !important;
+        color: #fff !important;
+        border-color: #c59d5f !important; /* Altın rengi sınır */
+        box-shadow: none !important;
+    }
+
+    /* 3. Focus olunca çıkan hafif altın gölge */
+    .form-floating > .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(197, 157, 95, 0.25) !important;
+    }
+
+    /* 4. Etiket (Label) Ayarları - Temel Durum */
+    .form-floating > label {
+        color: #c59d5f !important;       /* Yazı Rengi: Altın Sarısı */
+        font-weight: 600 !important;     /* Daha kalın ve okunaklı */
+        background-color: transparent !important; /* İlk başta şeffaf olsun */
+    }
+    
+    /* 5. Etiket Yukarı Kaydığında (Doluysa veya Tıklanınca) */
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #c59d5f !important; /* Altın rengi */
+        opacity: 1;
+    }
+</style>
+
+<div class="row justify-content-center mt-5 mb-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0" style="background-color: #252525;">
+            <div class="card-header bg-transparent border-bottom border-secondary text-center py-4">
+                <h3 class="mb-0 fw-bold" style="color: #c59d5f;">
+                    <i class="bi bi-person-plus me-2"></i>Kayıt Ol
+                </h3>
+            </div>
+            <div class="card-body p-5">
+                <form asp-action="Register" method="post" autocomplete="off">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="FullName" class="form-control" placeholder="Ad Soyad" autocomplete="off" />
+                        <label asp-for="FullName">Ad Soyad</label>
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Email" class="form-control" placeholder="E-posta" autocomplete="off" />
+                        <label asp-for="Email">E-posta</label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-4">
+                        <input asp-for="Password" class="form-control" placeholder="Şifre" autocomplete="new-password" />
+                        <label asp-for="Password">Şifre</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-lg fw-bold" style="background-color: #c59d5f; color: #1a1a1a; border: none;">
+                            <i class="bi bi-check-lg me-2"></i>Kayıt Ol
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-transparent border-top border-secondary">
+                <div class="text-center mt-4">
+                    <span class="text-white">Zaten hesabınız var mı?</span>
+                    <a asp-action="Login" class="fw-bold" style="color: #c59d5f; text-decoration: none; margin-left: 5px;">
+                        Giriş Yap
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

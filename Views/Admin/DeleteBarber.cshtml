@@ -1,0 +1,53 @@
+<!-- Bu sayfa berber silme işlemi için onay ekranıdır. Sadece yöneticiler görebilir. -->
+@model BerberRandevuSistemi.Models.Barber
+
+@{
+    ViewData["Title"] = "Berber Sil";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page-header mb-4">
+    <h2>
+        <span class="text-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>Berber Sil
+        </span>
+    </h2>
+    <p class="text-danger mb-0">Bu berberi silmek istediğinize emin misiniz?</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FullName)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+
+
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.IsAvailable)</dt>
+            <dd class="col-sm-8">
+                @if (Model.IsAvailable)
+                {
+                    <span class="badge bg-success">Müsait</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Müsait Değil</span>
+                }
+            </dd>
+                </dl>
+
+                <form asp-action="DeleteBarber">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i>Sil
+            </button>
+            <a asp-action="Barbers" class="btn btn-secondary">
+                <i class="bi bi-x-circle me-2"></i>İptal
+            </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>

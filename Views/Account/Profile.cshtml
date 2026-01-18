@@ -1,0 +1,133 @@
+<!-- Bu sayfa kullanıcı profil ve şifre değiştirme ekranıdır. -->
+@model BerberRandevuSistemi.Models.User
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="text-gold"><i class="bi bi-person-circle me-2"></i>Profilim</h2>
+            <p class="text-secondary">Bilgilerinizi güncelleyebilir ve şifrenizi değiştirebilirsiniz.</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Left Column: Personal Info -->
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-transparent border-bottom border-warning">
+                    <h5 class="mb-0 text-gold"><i class="bi bi-card-list me-2"></i>Kişisel Bilgiler</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Profile" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label text-muted">E-posta Adresi (Değiştirilemez)</label>
+                            <input asp-for="Email" class="form-control form-control-lg bg-dark text-light border-secondary" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label text-gold">Ad Soyad</label>
+                            <input asp-for="FullName" class="form-control form-control-lg bg-dark text-white border-secondary" placeholder="Adınız Soyadınız" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="PhoneNumber" class="form-label text-gold">Telefon Numarası</label>
+                            <input asp-for="PhoneNumber" type="tel" class="form-control form-control-lg bg-dark text-white border-secondary" placeholder="05XX XXX XX XX" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg text-dark fw-bold">
+                                <i class="bi bi-save me-2"></i>Bilgileri Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Change Password -->
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-transparent border-bottom border-danger">
+                    <h5 class="mb-0 text-danger"><i class="bi bi-shield-lock me-2"></i>Şifre Değiştir</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["PasswordSuccess"] != null)
+                    {
+                        <div class="alert alert-success"><i class="bi bi-check-all me-2"></i>@TempData["PasswordSuccess"]</div>
+                    }
+                    @if (TempData["PasswordError"] != null)
+                    {
+                        <div class="alert alert-danger"><i class="bi bi-exclamation-octagon me-2"></i>@TempData["PasswordError"]</div>
+                    }
+
+                    <form asp-action="ChangePassword" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-light">Mevcut Şifre</label>
+                            <input type="password" name="currentPassword" class="form-control form-control-lg bg-dark text-white border-secondary" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-gold">Yeni Şifre</label>
+                            <input type="password" name="newPassword" class="form-control form-control-lg bg-dark text-white border-secondary" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-gold">Yeni Şifre (Tekrar)</label>
+                            <input type="password" name="confirmPassword" class="form-control form-control-lg bg-dark text-white border-secondary" required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-outline-danger btn-lg">
+                                <i class="bi bi-key me-2"></i>Şifre Değiştir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Profile Specific Styles matching BookAppointment Dark Theme */
+    .text-gold { color: var(--accent-gold); }
+    .bg-dark { background-color: #2c2c2c !important; } 
+    .form-control:focus {
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 0.25rem rgba(197, 157, 95, 0.25);
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Phone formatting
+        const phoneInput = document.querySelector('input[type="tel"]');
+        if(phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    if (value.length <= 4) { value = value; }
+                    else if (value.length <= 7) { value = value.slice(0, 4) + ' ' + value.slice(4); }
+                    else if (value.length <= 9) { value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7); }
+                    else { value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7, 9) + ' ' + value.slice(9, 11); }
+                    e.target.value = value;
+                }
+            });
+        }
+    </script>
+}

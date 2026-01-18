@@ -1,0 +1,121 @@
+<!-- Bu sayfa tüm hizmetleri listeler. Sadece yöneticiler görebilir. -->
+@model IEnumerable<BerberRandevuSistemi.Models.Service>
+
+@{
+    ViewData["Title"] = "Hizmetler";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>
+            <span class="text-gold">
+                <i class="bi bi-list-check me-2"></i>Hizmetler
+            </span>
+        </h2>
+        <a asp-action="CreateService" class="btn btn-success">
+            <i class="bi bi-plus-circle me-2"></i>Yeni Hizmet Ekle
+        </a>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Hizmet Adı</th>
+                            <th>Fiyat</th>
+                            <th>Süre</th>
+                            <th>Açıklama</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">
+                                    <strong>@item.ServiceName</strong>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="text-gold fw-bold">@item.Price.ToString("N2") ₺</span>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-clock me-1"></i>@item.DurationMinutes dakika
+                                    </span>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="text-muted">
+                                        @(string.IsNullOrEmpty(item.Description) ? "-" : (item.Description.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description))
+                                    </span>
+                                </td>
+                                <td class="align-middle text-end">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="ServiceDetails" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="EditService" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="DeleteService" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-list-x display-1 text-muted mb-3"></i>
+            <h5 class="text-muted">Henüz hizmet eklenmemiş</h5>
+            <p class="text-muted mb-4">İlk hizmeti eklemek için aşağıdaki butona tıklayın</p>
+            <a asp-action="CreateService" class="btn btn-success">
+                <i class="bi bi-plus-circle me-2"></i>Yeni Hizmet Ekle
+            </a>
+        </div>
+    </div>
+}
+
+<style>
+    .table > tbody > tr {
+        transition: var(--transition);
+    }
+
+    .table > tbody > tr:hover {
+        background-color: rgba(197, 157, 95, 0.1);
+    }
+
+    .admin-page-header {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+</style>

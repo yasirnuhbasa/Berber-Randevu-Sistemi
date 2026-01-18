@@ -1,0 +1,336 @@
+<!-- Randevu alma formu. Berber, hizmet ve tarih seçimi içerir. -->
+<!-- Bu sayfa randevu alma ekranıdır. Müşteriler buradan berber ve hizmet seçerek randevu oluşturabilir. -->
+@model BerberRandevuSistemi.Models.Appointment
+
+@{
+    ViewData["Title"] = "Randevu Al";
+    var barbers = ViewBag.Barbers as List<BerberRandevuSistemi.Models.Barber> ?? new List<BerberRandevuSistemi.Models.Barber>();
+    var services = ViewBag.Services as List<BerberRandevuSistemi.Models.Service> ?? new List<BerberRandevuSistemi.Models.Service>();
+    bool isReadOnly = User.Identity != null && User.Identity.IsAuthenticated;
+}
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="text-center mb-5">
+                <h2 class="mb-3">
+                    <span class="text-gold">
+                        <i class="bi bi-calendar-check me-2"></i>Randevu Al
+                    </span>
+                </h2>
+                <p class="text-gray">Lütfen aşağıdaki formu doldurarak randevunuzu oluşturun</p>
+            </div>
+            
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="BookAppointment" method="post" id="appointmentForm" novalidate>
+                        <div asp-validation-summary="All" class="alert alert-danger" role="alert" style="display: none;"></div>
+
+                        <!-- Hidden Input for Final DateTime (yyyy-MM-ddTHH:mm:00) -->
+                        <input type="hidden" asp-for="AppointmentDate" id="finalAppointmentDate" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerName" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-2 text-gold"></i>@Html.DisplayNameFor(m => m.CustomerName)
+                                </label>
+                                <input asp-for="CustomerName" class="form-control form-control-lg" 
+                                       placeholder="Adınız ve Soyadınız" 
+                                       readonly="@(isReadOnly ? "readonly" : null)" />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerPhone" class="form-label fw-semibold">
+                                    <i class="bi bi-telephone me-2 text-gold"></i>@Html.DisplayNameFor(m => m.CustomerPhone)
+                                </label>
+                                <input asp-for="CustomerPhone" class="form-control form-control-lg" type="tel" 
+                                       placeholder="05XX XXX XX XX" />
+                                <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BarberId" class="form-label fw-semibold">
+                                    <i class="bi bi-person-badge me-2 text-gold"></i>@Html.DisplayNameFor(m => m.Barber)
+                                </label>
+                                <select asp-for="BarberId" class="form-select form-select-lg" id="barberSelect">
+                                    <option value="">-- Berber Seçiniz --</option>
+                                    @foreach (var barber in barbers)
+                                    {
+                                        <option value="@barber.Id">@barber.FullName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="BarberId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ServiceId" class="form-label fw-semibold">
+                                    <i class="bi bi-list-check me-2 text-gold"></i>Hizmet
+                                </label>
+                                <select asp-for="ServiceId" class="form-select form-select-lg" id="serviceSelect">
+                                    <option value="">-- Hizmet Seçiniz --</option>
+                                    @foreach (var service in services)
+                                    {
+                                        <option value="@service.Id" data-price="@service.Price" data-duration="@service.DurationMinutes">
+                                            @service.ServiceName - @service.Price.ToString("N2") ₺ (@service.DurationMinutes dk)
+                                        </option>
+                                    }
+                                </select>
+                                <span asp-validation-for="ServiceId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-calendar-event me-2 text-gold"></i>Randevu Tarihi
+                            </label>
+                            <!-- autocomplete="off" ADDED as requested -->
+                            <input type="text" class="form-control form-control-lg" id="datePicker" 
+                                   placeholder="Tarih seçiniz (Örn: 24.01.2026)" autocomplete="off" />
+                            <small class="form-text text-muted">Pazar günleri kapalıyız.</small>
+                        </div>
+
+                        <div class="mb-4" id="timeSlotContainer" style="display:none;">
+                            <label class="form-label fw-semibold mb-3">
+                                <i class="bi bi-clock me-2 text-gold"></i>Müsait Saatler (15dk aralıklarla)
+                            </label>
+                            <div id="timeSlots" class="d-flex flex-wrap gap-2">
+                                <!-- Slots will be rendered here -->
+                            </div>
+                             <span asp-validation-for="AppointmentDate" class="text-danger mt-2 d-block"></span>
+                        </div>
+
+                        <div id="serviceSummary" class="alert alert-info d-none mt-3">
+                            <h6 class="mb-2"><i class="bi bi-info-circle me-2"></i>Seçilen Hizmet Özeti:</h6>
+                            <p class="mb-1"><strong>Hizmet:</strong> <span id="selectedServiceName">-</span></p>
+                            <p class="mb-1"><strong>Fiyat:</strong> <span id="selectedServicePrice">-</span></p>
+                            <p class="mb-0"><strong>Süre:</strong> <span id="selectedServiceDuration">-</span></p>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-check-circle me-2"></i>Randevu Oluştur
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i>İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/tr.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const barberSelect = document.getElementById('barberSelect');
+            const serviceSelect = document.getElementById('serviceSelect');
+            const datePickerInput = document.getElementById('datePicker');
+            const timeSlotContainer = document.getElementById('timeSlotContainer');
+            const timeSlotsDiv = document.getElementById('timeSlots');
+            const finalDateInput = document.getElementById('finalAppointmentDate');
+            
+            // Service Summary Elements
+            const serviceSummary = document.getElementById('serviceSummary');
+            const selectedServiceName = document.getElementById('selectedServiceName');
+            const selectedServicePrice = document.getElementById('selectedServicePrice');
+            const selectedServiceDuration = document.getElementById('selectedServiceDuration');
+
+            // Initialize Flatpickr (As Requested)
+            flatpickr("#datePicker", {
+                locale: "tr",
+                dateFormat: "d.m.Y",
+                minDate: "today",
+                disable: [
+                    function(date) {
+                        return (date.getDay() === 0); // Disable Sundays
+                    }
+                ],
+                onChange: function(selectedDates, dateStr, instance) {
+                    // Call the function here
+                    loadTimeSlots(); 
+                }
+            });
+
+            // Event Listeners
+            barberSelect.addEventListener('change', loadTimeSlots);
+            serviceSelect.addEventListener('change', function() {
+                updateServiceSummary();
+                loadTimeSlots();
+            });
+
+            function updateServiceSummary() {
+                const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+                if (serviceSelect.value && selectedOption) {
+                    const price = selectedOption.getAttribute('data-price');
+                    const duration = selectedOption.getAttribute('data-duration');
+                    const serviceName = selectedOption.text.split(' - ')[0];
+
+                    selectedServiceName.textContent = serviceName;
+                    selectedServicePrice.textContent = parseFloat(price).toFixed(2) + ' ₺';
+                    selectedServiceDuration.textContent = duration + ' dakika';
+                    serviceSummary.classList.remove('d-none');
+                } else {
+                    serviceSummary.classList.add('d-none');
+                }
+            }
+
+            // Phone formatting
+            const phoneInput = document.querySelector('input[type="tel"]');
+            if(phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 0) {
+                        if (value.length <= 4) { value = value; }
+                        else if (value.length <= 7) { value = value.slice(0, 4) + ' ' + value.slice(4); }
+                        else if (value.length <= 9) { value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7); }
+                        else { value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7, 9) + ' ' + value.slice(9, 11); }
+                        e.target.value = value;
+                    }
+                });
+            }
+
+            // Renamed function to loadTimeSlots as requested
+            function loadTimeSlots() {
+                const barberId = barberSelect.value;
+                const serviceId = serviceSelect.value;
+                const dateString = datePickerInput.value; // "dd.MM.yyyy" format
+
+                // Reset
+                timeSlotsDiv.innerHTML = '';
+                finalDateInput.value = '';
+                timeSlotContainer.style.display = 'none';
+
+                if (!barberId || !serviceId || !dateString) {
+                    return;
+                }
+
+                timeSlotContainer.style.display = 'block';
+                // Spinner
+                timeSlotsDiv.innerHTML = '<div class="spinner-border text-gold" role="status"><span class="visually-hidden">Yükleniyor...</span></div>';
+
+                fetch(`/Home/GetAvailableTimeSlots?barberId=${barberId}&serviceId=${serviceId}&dateString=${dateString}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        timeSlotsDiv.innerHTML = '';
+                        
+                        // Check for existing appointment
+                        if (data.hasExistingAppointment) {
+                            timeSlotsDiv.innerHTML = `
+                                <div class="alert alert-warning w-100" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    Seçilen tarihte zaten bir randevunuz bulunmaktadır. Günde en fazla 1 randevu alabilirsiniz.
+                                </div>`;
+                            return;
+                        }
+
+                        const slots = data.slots;
+                        if (slots.length === 0) {
+                            timeSlotsDiv.innerHTML = '<p class="text-muted">Bu tarih için uygun saat bulunamadı veya Pazar günü seçildi.</p>';
+                            return;
+                        }
+
+                        slots.forEach(slot => {
+                            // Requested Debug Log
+                            console.log("Checking slot:", slot.time, "Available:", slot.isAvailable);
+
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.textContent = slot.time;
+
+                            if (slot.isAvailable) {
+                                // Available: Gold Outline
+                                btn.className = 'btn time-slot-btn btn-outline-warning';
+                                btn.onclick = function() {
+                                    // Remove active from all
+                                    document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('active'));
+                                    // Add active to current
+                                    this.classList.add('active');
+                                    
+                                    // Set hidden input
+                                    const parts = dateString.split('.');
+                                    const day = parts[0];
+                                    const month = parts[1];
+                                    const year = parts[2];
+                                    
+                                    // ISO format: yyyy-MM-ddTHH:mm:00
+                                    finalDateInput.value = `${year}-${month}-${day}T${slot.time}:00`;
+                                };
+                            } else {
+                                // Unavailable: Secondary & Disabled
+                                btn.className = 'btn time-slot-btn btn-secondary disabled';
+                                btn.disabled = true;
+                                console.log(`Slot ${slot.time} disabled due to: ${slot.debugWait || 'API response'}`);
+                            }
+                            
+                            timeSlotsDiv.appendChild(btn);
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        timeSlotsDiv.innerHTML = '<p class="text-danger">Saatler yüklenirken bir hata oluştu.</p>';
+                    });
+            }
+        });
+    </script>
+}
+
+<style>
+    .form-control-lg, .form-select-lg {
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+    }
+    .form-label {
+        font-size: 0.95rem;
+    }
+    .text-gold { color: var(--accent-gold); }
+    
+    /* Time Slot Buttons */
+    .time-slot-btn {
+        min-width: 80px;
+        border: 1px solid var(--accent-gold);
+        color: var(--text-white);
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .time-slot-btn:hover:not(:disabled) {
+        background: rgba(197, 157, 95, 0.2);
+        color: var(--text-white);
+    }
+    
+    .time-slot-btn.active {
+        background: var(--accent-gold);
+        color: var(--bg-dark);
+        font-weight: bold;
+        box-shadow: 0 0 10px rgba(197, 157, 95, 0.5);
+    }
+    
+    .time-slot-btn:disabled {
+        border-color: #444;
+        color: #666;
+        cursor: not-allowed;
+        background: rgba(255,255,255,0.05);
+        opacity: 0.6;
+    }
+    
+    /* Flatpickr Customization */
+    .flatpickr-calendar {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--accent-gold) !important;
+    }
+</style>

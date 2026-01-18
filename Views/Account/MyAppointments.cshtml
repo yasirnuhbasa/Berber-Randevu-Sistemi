@@ -1,0 +1,102 @@
+<!-- Bu sayfa kullanıcının kendi randevularını listelediği ekrandır. -->
+@model IEnumerable<BerberRandevuSistemi.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Randevularım";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-gold">
+            <i class="bi bi-calendar-check me-2"></i>Randevularım
+        </h2>
+        <a asp-controller="Home" asp-action="BookAppointment" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Yeni Randevu
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-lg border-0 bg-dark-subtle">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle">
+                    <thead class="bg-black text-gold">
+                        <tr>
+                            <th class="py-3 ps-4">Tarih</th>
+                            <th class="py-3">Saat</th>
+                            <th class="py-3">Berber</th>
+                            <th class="py-3">Hizmet</th>
+                            <th class="py-3">Fiyat</th>
+                            <th class="py-3 text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="text-center text-white-50 mt-4 mb-4">
+                                        <i class="fas fa-calendar-times fa-4x mb-3 d-block"></i>
+                                        <h4>Henüz randevunuz bulunmamaktadır.</h4>
+                                        <p>İlk randevunuzu oluşturmak için yukarıdaki "Yeni Randevu" butonunu kullanabilirsiniz.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                bool isPast = item.AppointmentDate < DateTime.Now;
+                                <tr>
+                                    <td class="ps-4 fw-medium">@item.AppointmentDate.ToString("dd.MM.yyyy")</td>
+                                    <td>@item.AppointmentDate.ToString("HH:mm")</td>
+                                    <td>@item.Barber?.FullName</td>
+                                    <td>@item.Service?.ServiceName</td>
+                                    <td>@(item.Service?.Price.ToString("N2")) ₺</td>
+                                    <td class="text-end pe-4">
+                                        @if (!isPast)
+                                        {
+                                            <form asp-action="CancelAppointment" asp-route-id="@item.Id" method="post" 
+                                                  onsubmit="return confirm('Randevuyu iptal etmek istediğinize emin misiniz?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm" title="İptal Et">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-white-50">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-dark-subtle { background-color: #212529; }
+    .table-dark { --bs-table-bg: #212529; }
+    .text-gold { color: var(--accent-gold); }
+</style>
