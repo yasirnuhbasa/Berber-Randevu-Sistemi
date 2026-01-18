@@ -17,7 +17,7 @@ Uygulama iki temel rol üzerine kurgulanmıştır:
     * "Randevu Al" ekranından tarih seçimi yapar.
     * Sistem, o tarihteki uygun saatleri ve müsait berberleri listeler (Dolu saatler engellenir).
     * Kullanıcı istediği hizmeti (Saç, Sakal vb.) seçerek randevusunu onaylar.
-    * "Randevularım" ekranından geçmiş ve gelecek randevularını takip edebilir.
+    * "Randevularım" ekranından gelecek randevularını takip edebilir.
 
 2.  **Yönetici (Admin) Senaryosu:**
     * Admin paneline erişir.
