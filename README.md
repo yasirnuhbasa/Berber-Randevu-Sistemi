@@ -35,19 +35,6 @@ Bu proje **ASP.NET Core MVC** mimarisi kullanılarak geliştirilmiştir.
 * **Front-End:** Bootstrap 5, HTML5, CSS3, JavaScript
 * **Diğer Araçlar:** FontAwesome (İkonlar), Google Maps Embed API
 
-## 🚀 Kurulum ve Çalıştırma (Hocanın Notu)
-Projeyi yerel makinenizde çalıştırmak için:
-
-1.  `appsettings.json` dosyasındaki "DefaultConnection" alanını kendi SQL Server sunucu adınıza göre güncelleyiniz.
-2.  Package Manager Console ekranını açınız.
-3.  Aşağıdaki komutu çalıştırarak veritabanını oluşturunuz:
-    ```powershell
-    Update-Database
-    ```
-4.  Projeyi başlatınız.
-    * **Admin Girişi:** (Eğer seed data kullanıldıysa buraya admin bilgilerini yazabilirsin, yoksa 'İlk üye olan kullanıcı admin yetkisi alabilir' notu düşebilirsin veya veritabanı oluşurken eklenen default admini belirtebilirsin).
-    * *Örn: Email: admin@premium.com / Şifre: 123456*
-
 ## 📹 Tanıtım Videosu
 Projenin çalışır halini ve kod yapısını anlatan tanıtım videosu:
 [YOUTUBE_LINKI_BURAYA_GELECEK]
