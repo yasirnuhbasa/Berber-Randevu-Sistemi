@@ -35,6 +35,5 @@ Bu proje **ASP.NET Core MVC** mimarisi kullanılarak geliştirilmiştir.
 * **Front-End:** Bootstrap 5, HTML5, CSS3, JavaScript
 * **Diğer Araçlar:** FontAwesome (İkonlar), Google Maps Embed API
 
-## 📹 Tanıtım Videosu
-Projenin çalışır halini ve kod yapısını anlatan tanıtım videosu:
-[YOUTUBE_LINKI_BURAYA_GELECEK]
+## 📹 Tanıtım Videosu Linki
+https://www.youtube.com/watch?v=omIWIU4VuvE
