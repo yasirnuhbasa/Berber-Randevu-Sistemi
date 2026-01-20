@@ -1,6 +1,6 @@
 # ✂️ Premium Berber - Randevu Yönetim Sistemi
 
-Web Tabanlı Programlama Dersi Final Projesi
+Web Tabanlı Programlama Dersi Final Projesi - Rıdvan Yasir NUHBAŞA - 132230033
 
 ## 🎯 Proje Amacı
 Bu projenin temel amacı, geleneksel berber randevu süreçlerini dijitalleştirerek hem işletme sahipleri hem de müşteriler için zaman kaybını önlemektir. Karmaşık telefon trafiğini ortadan kaldırarak, 7/24 erişilebilir, kullanıcı dostu ve yönetilebilir bir randevu ekosistemi oluşturmaktır.
